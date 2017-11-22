@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable
+            name="subitemViewModel"
+            type="com.codeprinciples.recyclerviewbindingadapter.viewmodels.SubitemViewModel"/>
+    </data>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:layout_marginLeft="20dp"
+        android:drawableLeft="@drawable/ic_subdirectory_arrow_right"
+        android:drawablePadding="5dp"
+        android:gravity="center_vertical"
+        android:foreground="?selectableItemBackground"
+        android:text="@{subitemViewModel.getSubitemModel().getSubitemTitle()}"
+        android:onClick="@{(v) -> subitemViewModel.onClick()}"
+        tools:text="Heading Text"/>
+</layout>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable
+            name="itemViewModel"
+            type="com.codeprinciples.recyclerviewbindingadapter.viewmodels.ItemViewModel"/>
+
+    </data>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:onClick="@{(v) -> itemViewModel.onClick()}">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:foreground="?selectableItemBackground"
+            android:textSize="18sp"
+            android:textStyle="normal"
+            android:drawableLeft="@drawable/ic_drag_handle"
+            android:text="@{itemViewModel.getModel().getItemTitle()}"
+            tools:text="Item Text"/>
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_marginRight="15dp"
+            android:foreground="?selectableItemBackground"
+            android:onClick="@{(v) -> itemViewModel.onDeleteClick()}"
+            android:src="@drawable/ic_delete"/>
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_marginRight="15dp"
+            android:foreground="?selectableItemBackground"
+            android:onClick="@{(v) -> itemViewModel.onExpandClick()}"
+            android:src="@drawable/ic_more_vert"/>
+
+    </LinearLayout>
+</layout>
