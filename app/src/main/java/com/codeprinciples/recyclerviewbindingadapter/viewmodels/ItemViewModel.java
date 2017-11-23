@@ -62,17 +62,18 @@ public class ItemViewModel {
     }
 
     public List<SubitemViewModel> getSubitemViewModels() {
-        if (subitemViewModels == null)
+        if (subitemViewModels == null) {
             subitemViewModels = new ArrayList<>();
-        for (SubitemModel subitemModel : model.getSubitems()) {
-            SubitemViewModel subitemViewModel = new SubitemViewModel(subitemModel);
-            subitemViewModel.setClickCallback(new ItemClickCallback<SubitemViewModel>() {
-                @Override
-                public void onItemClick(SubitemViewModel item) {
-                    listener.onSubitemClick(item);
-                }
-            });
-            subitemViewModels.add(subitemViewModel);
+            for (SubitemModel subitemModel : model.getSubitems()) {
+                SubitemViewModel subitemViewModel = new SubitemViewModel(subitemModel);
+                subitemViewModel.setClickCallback(new ItemClickCallback<SubitemViewModel>() {
+                    @Override
+                    public void onItemClick(SubitemViewModel item) {
+                        listener.onSubitemClick(item);
+                    }
+                });
+                subitemViewModels.add(subitemViewModel);
+            }
         }
         return subitemViewModels;
     }

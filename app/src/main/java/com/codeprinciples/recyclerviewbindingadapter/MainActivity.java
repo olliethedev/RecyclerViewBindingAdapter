@@ -19,6 +19,7 @@ import com.codeprinciples.recyclerviewbindingadapter.viewmodels.ItemViewModel;
 import com.codeprinciples.recyclerviewbindingadapter.viewmodels.LoadMoreViewModel;
 import com.codeprinciples.recyclerviewbindingadapter.viewmodels.SubitemViewModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements ItemViewModel.ItemViewModelEventsInterface {
@@ -85,17 +86,21 @@ public class MainActivity extends AppCompatActivity implements ItemViewModel.Ite
 
     @Override
     public void onItemDeleteClick(ItemViewModel item, boolean isExapanded) {
-        dataList.remove(item);
+        List<Object> toRemove = new ArrayList<>();
+        toRemove.add(item);
         if (isExapanded)
-            dataList.removeAll(item.getSubitemViewModels());
+            toRemove.addAll(item.getSubitemViewModels());
+        for(Object o : toRemove)
+            dataList.remove(o);//removeAll() does not work with ObservableArrayList
     }
 
     @Override
     public void onItemExpandClick(ItemViewModel item, boolean isExapanded) {
         if (isExapanded) {
-            dataList.addAll(dataList.indexOf(item), item.getSubitemViewModels());
+            dataList.addAll(dataList.indexOf(item)+1, item.getSubitemViewModels());
         } else {
-            dataList.removeAll(item.getSubitemViewModels());
+            for(SubitemViewModel subitemViewModel : item.getSubitemViewModels())
+                dataList.remove(subitemViewModel); //removeAll() does not work with ObservableArrayList
         }
     }
 
