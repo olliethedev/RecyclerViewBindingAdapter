@@ -1,6 +1,11 @@
 package com.codeprinciples.recyclerviewbindingadapter.viewmodels;
 
+import com.codeprinciples.recyclerviewbindingadapter.common.ItemClickCallback;
 import com.codeprinciples.recyclerviewbindingadapter.models.ItemModel;
+import com.codeprinciples.recyclerviewbindingadapter.models.SubitemModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * MIT License
@@ -28,7 +33,9 @@ import com.codeprinciples.recyclerviewbindingadapter.models.ItemModel;
 
 public class ItemViewModel {
     private ItemModel model;
-
+    private ItemViewModelEventsInterface listener;
+    private List<SubitemViewModel> subitemViewModels;
+    private boolean isExapanded;
     public ItemViewModel(ItemModel model) {
         this.model = model;
     }
@@ -37,15 +44,44 @@ public class ItemViewModel {
         return model;
     }
 
+    public void setListener(ItemViewModelEventsInterface listener) {
+        this.listener = listener;
+    }
+
     public void onClick(){
-        //todo
+        listener.onItemClick(this);
     }
 
     public void onDeleteClick(){
-        //todo
+        listener.onItemDeleteClick(this, isExapanded);
     }
 
     public void onExpandClick(){
-        //todo
+        isExapanded = !isExapanded;
+        listener.onItemExpandClick(this, isExapanded);
+    }
+
+    public List<SubitemViewModel> getSubitemViewModels() {
+        if (subitemViewModels == null)
+            subitemViewModels = new ArrayList<>();
+        for (SubitemModel subitemModel : model.getSubitems()) {
+            SubitemViewModel subitemViewModel = new SubitemViewModel(subitemModel);
+            subitemViewModel.setClickCallback(new ItemClickCallback<SubitemViewModel>() {
+                @Override
+                public void onItemClick(SubitemViewModel item) {
+                    listener.onSubitemClick(item);
+                }
+            });
+            subitemViewModels.add(subitemViewModel);
+        }
+        return subitemViewModels;
+    }
+
+    public interface ItemViewModelEventsInterface extends ItemClickCallback<ItemViewModel> {
+        void onItemDeleteClick(ItemViewModel item, boolean isExpanded);
+
+        void onItemExpandClick(ItemViewModel item, boolean isExpanded);
+
+        void onSubitemClick(SubitemViewModel subitemModel);
     }
 }

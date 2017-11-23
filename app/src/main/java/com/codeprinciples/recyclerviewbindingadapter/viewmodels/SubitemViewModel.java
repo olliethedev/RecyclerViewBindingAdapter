@@ -1,5 +1,6 @@
 package com.codeprinciples.recyclerviewbindingadapter.viewmodels;
 
+import com.codeprinciples.recyclerviewbindingadapter.common.ItemClickCallback;
 import com.codeprinciples.recyclerviewbindingadapter.models.SubitemModel;
 
 /**
@@ -28,7 +29,7 @@ import com.codeprinciples.recyclerviewbindingadapter.models.SubitemModel;
 
 public class SubitemViewModel {
     private SubitemModel subitemModel;
-
+    private ItemClickCallback<SubitemViewModel> clickCallback;
     public SubitemViewModel(SubitemModel subitemModel) {
         this.subitemModel = subitemModel;
     }
@@ -37,7 +38,11 @@ public class SubitemViewModel {
         return subitemModel;
     }
 
+    public void setClickCallback(ItemClickCallback<SubitemViewModel> clickCallback) {
+        this.clickCallback = clickCallback;
+    }
+
     public void onClick(){
-        //todo
+        clickCallback.onItemClick(this);
     }
 }

@@ -1,8 +1,8 @@
 package com.codeprinciples.recyclerviewbindingadapter;
 
 import android.databinding.ObservableArrayList;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.Toast;
@@ -21,7 +21,7 @@ import com.codeprinciples.recyclerviewbindingadapter.viewmodels.SubitemViewModel
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ItemViewModel.ItemViewModelEventsInterface {
     private RecyclerView recyclerView;
     private ObservableArrayList<Object> dataList;
     private LoadMoreViewModel loadMoreViewModel;
@@ -62,6 +62,9 @@ public class MainActivity extends AppCompatActivity {
         FakeDataRepository.getInstance().getNextItems(new SuccessCallback<List<ItemViewModel>>() {
             @Override
             public void onSuccess(List<ItemViewModel> data) {
+                for (ItemViewModel item : data) {
+                    item.setListener(MainActivity.this);
+                }
                 dataList.addAll(dataList.size()-1, data); //insert above "Load More" cell
                 loadMoreViewModel.getLoadMoreModel().isLoading.set(false);
             }
@@ -73,5 +76,31 @@ public class MainActivity extends AppCompatActivity {
                 loadMoreViewModel.getLoadMoreModel().isLoading.set(false);
             }
         });
+    }
+
+    @Override
+    public void onItemClick(ItemViewModel item) {
+        Toast.makeText(this, item.getModel().getItemTitle() + " clicked.", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onItemDeleteClick(ItemViewModel item, boolean isExapanded) {
+        dataList.remove(item);
+        if (isExapanded)
+            dataList.removeAll(item.getSubitemViewModels());
+    }
+
+    @Override
+    public void onItemExpandClick(ItemViewModel item, boolean isExapanded) {
+        if (isExapanded) {
+            dataList.addAll(dataList.indexOf(item), item.getSubitemViewModels());
+        } else {
+            dataList.removeAll(item.getSubitemViewModels());
+        }
+    }
+
+    @Override
+    public void onSubitemClick(SubitemViewModel subitemModel) {
+        Toast.makeText(this, subitemModel.getSubitemModel().getSubitemTitle() + " clicked.", Toast.LENGTH_SHORT).show();
     }
 }
