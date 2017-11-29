@@ -33,7 +33,7 @@ import java.util.List;
  */
 
 public class FakeDataRepository {
-    private static final int PAGE_SIZE=5;
+    private static final int PAGE_SIZE=10;
     private int currentPage;
     private static final FakeDataRepository ourInstance = new FakeDataRepository();
 

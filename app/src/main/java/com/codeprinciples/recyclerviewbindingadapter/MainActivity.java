@@ -1,16 +1,22 @@
 package com.codeprinciples.recyclerviewbindingadapter;
 
+import android.databinding.DataBindingUtil;
 import android.databinding.ObservableArrayList;
+import android.databinding.ViewDataBinding;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.widget.Toast;
 
 import com.codeprinciples.easyrecycleradapter.EasyRecyclerAdapter;
+import com.codeprinciples.easyrecycleradapter.StickyHeaderDecoration;
 import com.codeprinciples.recyclerviewbindingadapter.common.FailureCallback;
 import com.codeprinciples.recyclerviewbindingadapter.common.ItemClickCallback;
 import com.codeprinciples.recyclerviewbindingadapter.common.SuccessCallback;
+import com.codeprinciples.recyclerviewbindingadapter.databinding.LayoutHeadingRowBinding;
 import com.codeprinciples.recyclerviewbindingadapter.models.HeadingModel;
 import com.codeprinciples.recyclerviewbindingadapter.models.LoadMoreModel;
 import com.codeprinciples.recyclerviewbindingadapter.service.FakeDataRepository;
@@ -26,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements ItemViewModel.Ite
     private RecyclerView recyclerView;
     private ObservableArrayList<Object> dataList;
     private LoadMoreViewModel loadMoreViewModel;
+    private int headingCount =0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,12 +49,32 @@ public class MainActivity extends AppCompatActivity implements ItemViewModel.Ite
         recyclerView.setAdapter(adapter);//step 6: set adapter
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        recyclerView.addItemDecoration(new StickyHeaderDecoration( new StickyHeaderDecoration.SectionCallback() {
+            @Override
+            public Object getHeaderModelForPosition(int position) {
+                if(dataList.get(position) instanceof HeadingViewModel)
+                    return dataList.get(position);
+                return null;
+            }
+
+            @Override
+            public ViewDataBinding getHeaderForPosition(int position) {
+                if(dataList.get(position) instanceof HeadingViewModel){
+                    LayoutHeadingRowBinding binding = DataBindingUtil.inflate(LayoutInflater.from(MainActivity.this),R.layout.layout_heading_row, recyclerView,false);
+                    binding.getRoot().setBackgroundColor(Color.parseColor("#00ff00"));
+                    binding.setHeadingViewModel((HeadingViewModel)dataList.get(position));
+                    return binding;
+                }
+                return null;
+            }
+        }));
+
         loadMore();
     }
 
     private ObservableArrayList<Object> initialize() {
         ObservableArrayList<Object> list= new ObservableArrayList<>();
-        list.add(new HeadingViewModel(new HeadingModel("Items Heading")));
         loadMoreViewModel = new LoadMoreViewModel(new LoadMoreModel("Load More"), new ItemClickCallback<LoadMoreViewModel>() {
             @Override
             public void onItemClick(LoadMoreViewModel item) {
@@ -63,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements ItemViewModel.Ite
         FakeDataRepository.getInstance().getNextItems(new SuccessCallback<List<ItemViewModel>>() {
             @Override
             public void onSuccess(List<ItemViewModel> data) {
+                dataList.add(dataList.size()-1, new HeadingViewModel(new HeadingModel("Items Heading #"+headingCount++)));
                 for (ItemViewModel item : data) {
                     item.setListener(MainActivity.this);
                 }
