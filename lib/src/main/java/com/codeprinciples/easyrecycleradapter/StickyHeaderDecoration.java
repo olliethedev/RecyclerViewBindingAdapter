@@ -2,11 +2,9 @@ package com.codeprinciples.easyrecycleradapter;
 
 import android.databinding.ViewDataBinding;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -41,8 +39,8 @@ public class StickyHeaderDecoration extends RecyclerView.ItemDecoration {
     private final boolean shouldStack;
     private final LinkedHashMap<Object, View> modelViewDictionary = new LinkedHashMap<>();
 
-    public StickyHeaderDecoration( boolean shouldStack,  @NonNull SectionCallback sectionCallback) {
-        this.shouldStack = shouldStack;
+    public StickyHeaderDecoration(@NonNull SectionCallback sectionCallback) {
+        this.shouldStack = false; //stack mode work in progress
         this.sectionCallback = sectionCallback;
     }
 
@@ -75,7 +73,6 @@ public class StickyHeaderDecoration extends RecyclerView.ItemDecoration {
 
         Object model = sectionCallback.getHeaderModelForPosition(topChildPosition);
         if(model!=null){
-            Log.i("StickyHeaderDecoration", "header row:"+topChildPosition+" is at top");
             if(modelViewDictionary.get(model)==null){
                 ViewDataBinding headerBinding = sectionCallback.getHeaderForPosition(topChildPosition);
                 fixLayoutSize(headerBinding.getRoot(), parent);
@@ -84,7 +81,6 @@ public class StickyHeaderDecoration extends RecyclerView.ItemDecoration {
                 if(shouldStack)
                     parent.invalidateItemDecorations();
             }
-
         }
 
         for(int i =topChildPosition+1; i<topChildPosition+visibleChildren; i++){
@@ -98,11 +94,10 @@ public class StickyHeaderDecoration extends RecyclerView.ItemDecoration {
     }
 
     private void drawHeaders(Canvas c) {
-        c.save();        int headerOffset = 0;
+        c.save();
         c.translate(0,0);
         if(shouldStack){
             for(View v : modelViewDictionary.values()){
-                v.setBackgroundColor(Color.parseColor("#ff0000"));
                 v.draw(c);
                 c.translate(0,v.getHeight());
             }
@@ -112,7 +107,6 @@ public class StickyHeaderDecoration extends RecyclerView.ItemDecoration {
                 lastView = v;
             }
             if(lastView!=null) {
-                lastView.setBackgroundColor(Color.parseColor("#00ff00"));
                 lastView.draw(c);
                 c.translate(0, lastView.getHeight());
             }
